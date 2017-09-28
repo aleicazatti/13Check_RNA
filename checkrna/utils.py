@@ -4,6 +4,11 @@ import pandas as pd
 import pynmrstar as bmrb
 bmrb.CONVERT_DATATYPES = True
 
+# Python 2.x compatibility
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
 
 def read_bmrb(bmrb_id, bmr_path='bmrbs'):
     """
