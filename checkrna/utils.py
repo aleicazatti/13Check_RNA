@@ -4,6 +4,11 @@ import pandas as pd
 import pynmrstar as bmrb
 bmrb.CONVERT_DATATYPES = True
 
+# Python 2.x compatibility
+try:
+    FileNotFoundError
+except NameError:
+    FileNotFoundError = IOError
 
 def read_bmrb(bmrb_id, bmr_path='bmrbs'):
     """
@@ -196,7 +201,8 @@ def write(results):
                     for carbon in carbons:
                         # If the nuclei is an RNA carbon
                         if rowdata[1] == carbon and rowdata[-1] == n_dataset:
-                            error = round(decimal.Decimal(error), 3)
+                            error = decimal.Decimal(error)
+                            #error = round(decimal.Decimal(error), 3)
                             shift_loop.data[rownum][cs_index] -= error
 
         elif fmt == 'csv' or fmt == 'df':
