@@ -12,8 +12,7 @@ except NameError:
 
 def read_bmrb(bmrb_id, bmr_path='bmrbs'):
     """
-    Reads nmrstar file of a given BMRB entry and returns its content 
-    and content information ???
+    Reads nmrstar file of a given BMRB entry and returns its content
 
     Parameters
     ----------
@@ -29,8 +28,8 @@ def read_bmrb(bmrb_id, bmr_path='bmrbs'):
     ref_sequences : list
        list of sequences used as reference
         '-' is used in a sequence when a reference residue doesn't exist
-    bmrb_cont : PyNMRSTAR Entry
-        OO representation of the nmrstar file content
+    bmrb_cont : 
+        PyNMRSTAR object representing the nmrstar file
     """
     try:
         bmrb_cont = bmrb.Entry.from_file('{}/bmr{}.str'.format(bmr_path,
