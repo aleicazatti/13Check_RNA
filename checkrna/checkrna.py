@@ -52,7 +52,7 @@ def checkcarbons(bmrb_id, fmt='nmrstar'):
 
                 # All reference values are outside the expected ranges
                 elif not np.any(in_range):
-                    error = compute_error(dataset, merged_df)
+                    error = compute_error(merged_df)
 
                     if error is not None:
                         results.append((bmrb_id, bmrb_cont, error,
@@ -76,7 +76,7 @@ def checkcarbons(bmrb_id, fmt='nmrstar'):
                     # All reference  values of ribose are outside the
                     # expected ranges
                     if np.all(nbase) and not np.any(ribose):
-                        error = compute_error(dataset, merged_df.iloc[3:])
+                        error = compute_error(merged_df.iloc[3:])
 
                         if error is not None:
                             results.append((bmrb_id, bmrb_cont, error,
@@ -90,7 +90,7 @@ def checkcarbons(bmrb_id, fmt='nmrstar'):
                     # All reference values of nitrogenous bases are
                     # inside the expected ranges
                     elif not np.any(nbase) and np.all(ribose):
-                        error = compute_error(dataset, merged_df.iloc[:3])
+                        error = compute_error(merged_df.iloc[:3])
 
                         if error is not None:
                             results.append((bmrb_id, bmrb_cont, error,

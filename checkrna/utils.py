@@ -129,15 +129,13 @@ def extract_refcs(df):
     return merged_df, in_range
 
 
-def compute_error(dataset, merged_df):
+def compute_error(merged_df):
     """
     Searches for a systematic error in 13C chemical shifts based on deviation 
     from expected values and returns the error if found
 
     Parameters
     ----------    
-    dataset : DataFrame
-        DataFrame with a subset of 13C chemical shifts values
     merged_df : DataFrame
         DataFrame with 'cs_val' from df merged with the reference ranges
 
