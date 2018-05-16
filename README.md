@@ -15,7 +15,7 @@ pip install 13Check_RNA/
 
 ### Using the checkrna module
 
-[In this Jupyter Notebook](https://github.com/BIOS-IMASL/13Check_RNA/ExampleNotebook.ipynb) you can run the following commands and the examples of use, and check-out the output messages and error-warnings. 
+[In this Jupyter Notebook](https://github.com/BIOS-IMASL/13Check_RNA/blob/master/examples/ExampleNotebook.ipynb) you can run the following commands and the examples of use, and check-out the output messages and error-warnings. 
 
 0. **In a python script or Jupyter Notebook shell write:**
 
