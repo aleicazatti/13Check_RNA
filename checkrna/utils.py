@@ -10,17 +10,15 @@ try:
 except NameError:
     FileNotFoundError = IOError
 
-def read_bmrb(bmrb_id, bmr_path='bmrbs'):
+def read_bmrb(bmrb_id):
     """
     Reads nmrstar file of a given BMRB entry and returns its content
 
     Parameters
     ----------
-    bmrb_id : int
-        bmrb accession number
-    bmr_path : string
-        path to the folder with nmrstar files
-
+    bmrb_id : int or str
+        BMRB accession number or path to nmrstar file
+   
     Returns
     -------
     dataframes : list
@@ -30,13 +28,22 @@ def read_bmrb(bmrb_id, bmr_path='bmrbs'):
         '-' is used in a sequence when a reference residue doesn't exist
     bmrb_cont : 
         PyNMRSTAR object representing the nmrstar file
+    correct_filename : str
+        path to the correct file and correct file name
     """
-    try:
-        bmrb_cont = bmrb.Entry.from_file('{}/bmr{}.str'.format(bmr_path,
-                                                               bmrb_id))
-    except FileNotFoundError:
-        bmrb_cont = bmrb.Entry.from_database(bmrb_id)
+    
+    if type(bmrb_id) == int:
+        correct_filename = 'bmr{}_correct'.format(bmrb_id)
+        try:
+            bmrb_cont = bmrb.Entry.from_file('bmr{}.str'.format(bmrb_id))
+        except FileNotFoundError:
+            bmrb_cont = bmrb.Entry.from_database(bmrb_id)
+            
+    if type(bmrb_id) == str:
+        correct_filename = '{}_correct'.format(bmrb_id.split('.')[0])
+        bmrb_cont = bmrb.Entry.from_file('{}'.format(bmrb_id))
 
+   
     acs = bmrb_cont.get_saveframes_by_category('assigned_chemical_shifts')
 
     dataframes = []
@@ -87,7 +94,7 @@ def read_bmrb(bmrb_id, bmr_path='bmrbs'):
                     ref_sequences.append(ref_seq)
                     dataframes.append(df_seq)
 
-    return dataframes, ref_sequences, bmrb_cont
+    return dataframes, ref_sequences, bmrb_cont,correct_filename
 
 
 def extract_refcs(df):
@@ -129,7 +136,7 @@ def extract_refcs(df):
     return merged_df, in_range
 
 
-def compute_error(merged_df):
+def compute_error(merged_df,cutoff):
     """
     Searches for a systematic error in 13C chemical shifts based on deviation 
     from expected values and returns the error if found
@@ -138,7 +145,8 @@ def compute_error(merged_df):
     ----------    
     merged_df : DataFrame
         DataFrame with 'cs_val' from df merged with the reference ranges
-
+    cutoff : float
+        cutoff for error deviation. default value = 0.5    
     Returns
     ----------
     error : float
@@ -149,11 +157,11 @@ def compute_error(merged_df):
     deviation = np.nanstd(deltas)
     error = np.nanmean(deltas)
 
-    if deviation <= 1.:
+    if deviation <= cutoff:
         return error
 
 
-def write(results):
+def write(results,correct_filename,fmt):
     """
     Saves or returns bmrb_cont with corrected 13C chemical shifts
 
@@ -171,6 +179,8 @@ def write(results):
             DataFrame with a subset of 13C chemical shifts values
         fmt : str
             Available option 'nmrstar','csv' or 'df' (default 'nmrstar')
+    correct_filename : str
+        path to the correct file and correct file name
 
     Returns
     ----------
@@ -192,7 +202,7 @@ def write(results):
 
             for cs_sf in bmrb_cont.get_saveframes_by_category('assigned_chemical_shifts'):
                 shift_loop = cs_sf.get_loop_by_category('atom_chem_shift')
-                cs_index = shift_loop.columns.index('Val')
+                cs_index = shift_loop.tags.index('Val')
 
                 for rownum, rowdata in enumerate(shift_loop.get_tag(tag)):
                     for carbon in carbons:
@@ -210,9 +220,9 @@ def write(results):
                 dataset.ix[(dataset['atom_id'] == carbon), 'cs_val'] = c
 
             correct_datasets.append(dataset)
-
+  
     if fmt == 'nmrstar':
-        fb = open('bmr{}_correct.str'.format(bmrb_id), 'w')
+        fb = open('{}.str'.format(correct_filename), 'w')
         fb.write(str(bmrb_cont))
         fb.close()
 
@@ -224,7 +234,7 @@ def write(results):
                                                      'atom_id',
                                                      'cs_val']]
 
-        final_dataset.to_csv('bmr{}_correct.csv'.format(bmrb_id))
+        final_dataset.to_csv('{}.csv'.format(correct_filename))
 
     elif fmt == 'df':
         final_dataset = pd.concat(correct_datasets)[['id',
@@ -235,3 +245,4 @@ def write(results):
                                                      'cs_val']]
 
         return(final_dataset)
+
