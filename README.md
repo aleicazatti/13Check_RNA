@@ -139,5 +139,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 * We thank Jon Wedell, for helping us with the [PyNMRSTAR library](https://github.com/uwbmrb/PyNMRSTAR)
 
+## Citation
 
+If you find this module (or the information contained in this repository) useful, please cite us:
+
+A A Icazatti, O A Martin, M Villegas, I Szleifer, J A Vila; 13Check_RNA: A tool to evaluate 13C chemical shifts assignments of RNA, Bioinformatics, , bty470, https://doi.org/10.1093/bioinformatics/bty470
 
